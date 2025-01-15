@@ -5,15 +5,15 @@ import { useState,useEffect } from "react"
 export default function Home(){
   const [dane,setDane]=useState(null)
   const [input,setInput]=useState(null)
-  const [correct,setCorrect]=useState(null)
   
+  const [click,setClick]=useState(0)  
     const getData = async ()=>{
     try {
      const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
       const json = await data.json()
       console.log(json.output)
       setDane(json.output)
-      setCorrect(null)
+      setClick(0)
     } catch (err) {
       console.log(err)
     }
@@ -27,11 +27,8 @@ export default function Home(){
   }
   const sendInf = (i)=>{
     console.log(i)
-    if(i==true){
-      setCorrect("Poprawna odpowiedź")
-    }else{
-      setCorrect("Błędna odpowiedź")
-    }
+    setClick(1)
+    
   }
   return(
     <div className="flex flex-col justify-center items-center h-screen w-screen gap-2">
@@ -42,9 +39,9 @@ export default function Home(){
             <h1 className="font-bold">{dane.question}</h1>
             <div className="flex flex-col gap-2">
             {dane.answers && dane.answers.map((item)=>(
-              <Button key={item.isCorrect} onClick={()=>{sendInf(item.isCorrect)}} className="border-2 border-black">{item.text}</Button>
+              <Button disabled={click==1?true:false} variant="outline" key={item.isCorrect} onClick={()=>{sendInf(item.isCorrect)}} className={click==1?(item.isCorrect==true?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{item.text}</Button>
             ))}
-            {correct}
+            
             </div>
           </div>
       }
