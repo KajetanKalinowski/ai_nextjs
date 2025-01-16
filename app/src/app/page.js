@@ -12,7 +12,8 @@ export default function Home(){
   const [history,setHistory]=useState(null)
     const getData = async ()=>{
     try {
-     const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+    //  const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+     const data = await fetch('http://192.168.0.136:5678/webhook/api',{headers:{"topic":`${input}`}})
       const json = await data.json()
       console.log(json.output)
       setDane(json.output)
@@ -30,7 +31,8 @@ export default function Home(){
   useEffect(()=>{
     const getHis = async()=>{
       try {
-        const data = await fetch('http://172.16.15.138:5678/webhook/history')
+        // const data = await fetch('http://172.16.15.138:5678/webhook/history')
+        const data = await fetch('http://192.168.0.136:5678/webhook/history')
         const json = await data.json()
         console.log(json.items)
         setHistory(json.items)
@@ -47,7 +49,8 @@ export default function Home(){
   }
   const sendInf = async(i)=>{
     console.log(i)
-    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
+    // await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
+    await fetch(`http://192.168.0.136:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
     setClick(1)
   }
   
