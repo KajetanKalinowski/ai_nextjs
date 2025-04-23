@@ -3,13 +3,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState,useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-
+import PocketBase, { ClientResponseError } from 'pocketbase';
+const pb = new PocketBase('http://172.16.15.138:8080');
 export default function Home(){
   const [dane,setDane]=useState(null)
   const [input,setInput]=useState(null)
   const [first,setFirst]=useState(0)
   const [click,setClick]=useState(0) 
   const [history,setHistory]=useState(null)
+  const [user,setUser] = useState(pb.authStore.record)
+  if(!user){
+    window.location.href="/logowanie"
+  }
     const getData = async ()=>{
     try {
       const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
@@ -53,9 +58,13 @@ export default function Home(){
     //await fetch(`http://192.168.0.136:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
     setClick(1)
   }
-  
+  const wyloguj = ()=>{
+    pb.authStore.clear()
+    window.location.href="/logowanie"
+  }
   return(
     <div className="flex flex-col justify-center items-center h-screen w-screen gap-2">
+      <Button onClick={wyloguj}>Wyloguj</Button>
       <Input onChange={(e)=>{handleInput(e)}} placeholder="Temat pytania" className="w-[300px]"></Input>
       {first==0?<Button onClick={getData}>Losuj Pytanie</Button>:<></>}
       {dane && 
