@@ -12,16 +12,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { TrendingUp } from "lucide-react"
+import {
+  Label,
+  PolarGrid,
+  PolarRadiusAxis,
+  RadialBar,
+  RadialBarChart,
+} from "recharts"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+
 import PocketBase, { ClientResponseError } from 'pocketbase';
 const pb = new PocketBase('http://172.16.15.138:8080');
 export default function Home(){
+  
   const [dane,setDane]=useState(null)
   const [input,setInput]=useState(null)
   const [first,setFirst]=useState(0)
   const [click,setClick]=useState(0) 
+  const [liczbap,setLiczbap]=useState(0)
   const [history,setHistory]=useState(null)
   const [user,setUser] = useState(pb.authStore.record)
   const [show,setShow] = useState(true)
+  const [sesjon,setSesjon] = useState(window.localStorage.setItem(`sesja`,Date()))
   if(!user){
     window.location.href="/logowanie"
   }
@@ -35,6 +57,8 @@ export default function Home(){
       setDane(json.output)
       setClick(0)
       setFirst(1)
+      setLiczbap(liczbap+1)
+      console.log(sesjon)
     //   if(json.output==undefined){
     //     getData()
     // }
@@ -67,7 +91,7 @@ export default function Home(){
   }
   const sendInf = async(i)=>{
     console.log(i)
-    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${window.localStorage.getItem('sesjon')}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     //await fetch(`http://192.168.0.136:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
     setClick(1)
   }
@@ -75,11 +99,89 @@ export default function Home(){
     pb.authStore.clear()
     window.location.href="/logowanie"
   }
+  const pod = ()=>{
+    window.location.href="/"
+  }
+  const chartData = [
+    { progress: "Pytania", pytania: liczbap, fill: "var(--color-safari)" },
+  ]
+  
+  const chartConfig = {
+    pytania: {
+      label: "Pytania",
+    },
+    progress: {
+      label: "Pytania",
+      color: "hsl(var(--chart-2))",
+    },
+  }
   return(
     <div className="flex flex-col justify-center items-center h-screen w-screen gap-2">
       <Button onClick={wyloguj}>Wyloguj</Button>
       {/* <Input onChange={(e)=>{handleInput(e)}} placeholder="Temat pytania" className="w-[300px]"></Input> */}
-      <Select onValueChange={(e)=>{handleInput(e)}}>
+      <Card className="flex flex-col">
+            <CardHeader className="items-center pb-0">
+              <CardTitle>Zadane pytania</CardTitle>
+              <CardDescription></CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 pb-0">
+              <ChartContainer
+                config={chartConfig}
+                className="mx-auto aspect-square max-h-[250px]"
+              >
+                <RadialBarChart
+                  data={chartData}
+                  startAngle={0}
+                  endAngle={liczbap*36}
+                  innerRadius={80}
+                  outerRadius={110}
+                >
+                  <PolarGrid
+                    gridType="circle"
+                    radialLines={true}
+                    stroke="none"
+                    className="first:fill-muted last:fill-background"
+                    polarRadius={[86, 74]}
+                  />
+                  <RadialBar dataKey="pytania" background cornerRadius={10} />
+                  <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-4xl font-bold"
+                              >
+                                {chartData[0].pytania}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 24}
+                                className="fill-muted-foreground"
+                              >
+                                {/* {tu może być tekst} */}
+                              </tspan>
+                            </text>
+                          )
+                        }
+                      }}
+                    />
+                  </PolarRadiusAxis>
+                </RadialBarChart>
+              </ChartContainer>
+            </CardContent>
+            <CardFooter className="flex-col gap-2 text-sm">
+            </CardFooter>
+          </Card>
+      {first==0?<Select onValueChange={(e)=>{handleInput(e)}}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder="Kategorie Pytań" />
       </SelectTrigger>
@@ -94,7 +196,7 @@ export default function Home(){
           <SelectItem value="C++">C++</SelectItem>
         </SelectGroup>
       </SelectContent>
-    </Select>
+    </Select>:<></>}
       {first==0?<Button onClick={getData} disabled={show}>Losuj Pytanie</Button>:<></>}
       {dane && 
           <div className="flex flex-col justify-start items-center gap-2">
@@ -105,7 +207,7 @@ export default function Home(){
             ))}
             
             </div>
-            {first==1?<Button onClick={getData}>Następne Pytanie</Button>:<></>}
+            {first==1 && liczbap<10?(click!=0?<Button onClick={getData}>Następne Pytanie</Button>:<Button disabled onClick={getData}>Następne Pytanie</Button>):(click!=0?<Button onClick={pod}>Przejdź do podsumowania</Button>:<Button disabled onClick={pod}>Przejdź do podsumowania</Button>)}
           </div>
       }
       <ScrollArea className="flex flex-col gap-2 h-[50vh] w-full rounded-md border">
