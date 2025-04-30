@@ -43,11 +43,33 @@ export default function Home(){
   const [history,setHistory]=useState(null)
   const [user,setUser] = useState(pb.authStore.record)
   const [show,setShow] = useState(true)
-  const [sesjon,setSesjon] = useState(window.localStorage.setItem(`sesja`,Date()))
+  const [sesjon,setSesjon] = useState(Date())
   if(!user){
     window.location.href="/logowanie"
   }
-    const getData = async ()=>{
+    const onfirst = async ()=>{
+    try {
+      const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+     //const data = await fetch('http://192.168.0.136:5678/webhook/api',{headers:{"topic":`${input}`}})
+     await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
+      const json = await data.json()
+      console.log(data)
+      console.log(json)
+      setDane(json.output)
+      setClick(0)
+      setFirst(1)
+      setLiczbap(liczbap+1)
+      console.log(sesjon)
+    //   if(json.output==undefined){
+    //     getData()
+    // }
+    
+    } catch (err) {
+      console.log(err)
+    }
+   
+  }
+  const getData = async ()=>{
     try {
       const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
      //const data = await fetch('http://192.168.0.136:5678/webhook/api',{headers:{"topic":`${input}`}})
@@ -91,7 +113,7 @@ export default function Home(){
   }
   const sendInf = async(i)=>{
     console.log(i)
-    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${window.localStorage.getItem('sesjon')}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     //await fetch(`http://192.168.0.136:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
     setClick(1)
   }
@@ -194,10 +216,12 @@ export default function Home(){
           <SelectItem value="Python">Python</SelectItem>
           <SelectItem value="C#">C#</SelectItem>
           <SelectItem value="C++">C++</SelectItem>
+          <SelectItem value="C">C</SelectItem>
+          <SelectItem value="PHP">PHP</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>:<></>}
-      {first==0?<Button onClick={getData} disabled={show}>Losuj Pytanie</Button>:<></>}
+      {first==0?<Button onClick={onfirst} disabled={show}>Losuj Pytanie</Button>:<></>}
       {dane && 
           <div className="flex flex-col justify-start items-center gap-2">
             <h1 className="font-bold">{dane.question}</h1>

@@ -1,6 +1,6 @@
 "use client"
-
-import { TrendingUp } from "lucide-react"
+import { useEffect,useState } from "react"
+import { Car, TrendingUp } from "lucide-react"
 import {
   Label,
   PolarGrid,
@@ -18,89 +18,37 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-const chartData = [
-  { progress: "Pytania", pytania: 10, fill: "var(--color-safari)" },
-]
-
-const chartConfig = {
-  pytania: {
-    label: "Pytania",
-  },
-  progress: {
-    label: "Pytania",
-    color: "hsl(var(--chart-2))",
-  },
-}
-
-export function Component() {
+import { ScrollArea } from "@/components/ui/scroll-area"
+// const i=0; i<10 ;i++;
+export default function Podsumowania() {
+  const [history,setHistory] = useState(null)
+   useEffect(()=>{
+      const getHis = async()=>{
+        try {
+           const data = await fetch('http://172.16.15.138:5678/webhook/history')
+         // const data = await fetch('http://192.168.0.136:5678/webhook/history')
+          const json = await data.json()
+          console.log(json.items)
+          setHistory(json.items)
+        } catch (error) {
+          
+        }
+      }
+      getHis()
+    },[])
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Radial Chart - Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <RadialBarChart
-            data={chartData}
-            startAngle={0}
-            endAngle={250}
-            innerRadius={80}
-            outerRadius={110}
-          >
-            <PolarGrid
-              gridType="circle"
-              radialLines={false}
-              stroke="none"
-              className="first:fill-muted last:fill-background"
-              polarRadius={[86, 74]}
-            />
-            <RadialBar dataKey="visitors" background cornerRadius={10} />
-            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
-                        >
-                          {chartData[0].visitors.toLocaleString()}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Visitors
-                        </tspan>
-                      </text>
-                    )
-                  }
-                }}
-              />
-            </PolarRadiusAxis>
-          </RadialBarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
-    </Card>
+    <ScrollArea className="flex flex-col gap-2 h-[100vh] w-full rounded-md border">
+      {history && history.map((item,idx)=>{
+        if(item.sesja==item.sesja){
+          
+        }
+        <Card key={idx}>
+        <CardTitle>Sesja {item.category}</CardTitle>
+          <CardContent>
+
+          </CardContent>
+          </Card>
+})}
+    </ScrollArea>
   )
 }
