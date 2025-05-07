@@ -32,7 +32,8 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 
 import PocketBase, { ClientResponseError } from 'pocketbase';
-const pb = new PocketBase('http://172.16.15.138:8080');
+//const pb = new PocketBase('http://172.16.15.138:8080');
+const pb = new PocketBase('http://192.168.0.150:8080');
 export default function Home(){
   
   const [dane,setDane]=useState(null)
@@ -49,9 +50,10 @@ export default function Home(){
   }
     const onfirst = async ()=>{
     try {
-      const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
-     //const data = await fetch('http://192.168.0.136:5678/webhook/api',{headers:{"topic":`${input}`}})
-     await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
+      //const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+     const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
+    // await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
+     await fetch(`http://192.168.0.150:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
       const json = await data.json()
       console.log(data)
       console.log(json)
@@ -71,8 +73,8 @@ export default function Home(){
   }
   const getData = async ()=>{
     try {
-      const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
-     //const data = await fetch('http://192.168.0.136:5678/webhook/api',{headers:{"topic":`${input}`}})
+     // const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+     const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
       const json = await data.json()
       console.log(data)
       console.log(json)
@@ -93,8 +95,8 @@ export default function Home(){
   useEffect(()=>{
     const getHis = async()=>{
       try {
-         const data = await fetch('http://172.16.15.138:5678/webhook/history')
-       // const data = await fetch('http://192.168.0.136:5678/webhook/history')
+        // const data = await fetch('http://172.16.15.138:5678/webhook/history')
+        const data = await fetch('http://192.168.0.150:5678/webhook/history')
         const json = await data.json()
         console.log(json.items)
         setHistory(json.items)
@@ -113,8 +115,8 @@ export default function Home(){
   }
   const sendInf = async(i)=>{
     console.log(i)
-    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
-    //await fetch(`http://192.168.0.136:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:dane.answers[1].text)}`,{method:"POST"})
+    //await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    await fetch(`http://192.168.0.150:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     setClick(1)
   }
   const wyloguj = ()=>{
@@ -122,7 +124,7 @@ export default function Home(){
     window.location.href="/logowanie"
   }
   const pod = ()=>{
-    window.location.href="/"
+    window.location.href="/podsumowanie"
   }
   const chartData = [
     { progress: "Pytania", pytania: liczbap, fill: "var(--color-safari)" },

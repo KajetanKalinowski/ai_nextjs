@@ -12,7 +12,8 @@ import {
   import { Label } from "@/components/ui/label"
   import { Button } from "@/components/ui/button"
   import PocketBase, { ClientResponseError } from 'pocketbase';
-const pb = new PocketBase('http://172.16.15.138:8080');
+//const pb = new PocketBase('http://172.16.15.138:8080');
+const pb = new PocketBase('http://192.168.0.150:8080');
 export default function Log() {
     const [inputs, setInputs] = useState({login:null,password:null})
     const handleLogin = async ()=>{
