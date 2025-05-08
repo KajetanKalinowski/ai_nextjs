@@ -32,8 +32,8 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 
 import PocketBase, { ClientResponseError } from 'pocketbase';
-//const pb = new PocketBase('http://172.16.15.138:8080');
-const pb = new PocketBase('http://192.168.0.150:8080');
+const pb = new PocketBase('http://172.16.15.138:8080');
+//const pb = new PocketBase('http://192.168.0.150:8080');
 export default function Home(){
   
   const [dane,setDane]=useState(null)
@@ -45,15 +45,16 @@ export default function Home(){
   const [user,setUser] = useState(pb.authStore.record)
   const [show,setShow] = useState(true)
   const [sesjon,setSesjon] = useState(Date())
+  const [cos,setCos] = useState(Math.random()*10000)
   if(!user){
     window.location.href="/logowanie"
   }
     const onfirst = async ()=>{
     try {
-      //const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
-     const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
-    // await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
-     await fetch(`http://192.168.0.150:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
+      const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+     //const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
+    await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&nrsesji=${cos}&category=${input}`,{method:"POST"})
+     //await fetch(`http://192.168.0.150:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
       const json = await data.json()
       console.log(data)
       console.log(json)
@@ -73,8 +74,8 @@ export default function Home(){
   }
   const getData = async ()=>{
     try {
-     // const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
-     const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
+      const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
+     //const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
       const json = await data.json()
       console.log(data)
       console.log(json)
@@ -95,8 +96,8 @@ export default function Home(){
   useEffect(()=>{
     const getHis = async()=>{
       try {
-        // const data = await fetch('http://172.16.15.138:5678/webhook/history')
-        const data = await fetch('http://192.168.0.150:5678/webhook/history')
+         const data = await fetch('http://172.16.15.138:5678/webhook/history')
+        //const data = await fetch('http://192.168.0.150:5678/webhook/history')
         const json = await data.json()
         console.log(json.items)
         setHistory(json.items)
@@ -115,8 +116,8 @@ export default function Home(){
   }
   const sendInf = async(i)=>{
     console.log(i)
-    //await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
-    await fetch(`http://192.168.0.150:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i.isCorrect}&usr_txt_ans=${i.text}&nrsesji=${cos}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    //await fetch(`http://192.168.0.150:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     setClick(1)
   }
   const wyloguj = ()=>{
@@ -229,7 +230,7 @@ export default function Home(){
             <h1 className="font-bold">{dane.question}</h1>
             <div className="flex flex-col gap-2">
             {dane.answers && dane.answers.map((item,idx)=>(
-              <Button disabled={click==1?true:false} variant="outline" key={idx} onClick={()=>{sendInf(item.isCorrect)}} className={click==1?(item.isCorrect==true?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{item.text}</Button>
+              <Button disabled={click==1?true:false} variant="outline" key={idx} onClick={()=>{sendInf(item)}} className={click==1?(item.isCorrect==true?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{item.text}</Button>
             ))}
             
             </div>
@@ -240,10 +241,10 @@ export default function Home(){
         {history&&history.map((item,idx)=>(
           <div key={idx} className="flex flex-col justify-center items-center gap-2 m-2">
           <h1>{item.question}</h1>
-          <Button disabled variant="outline" className={item.correct_answer==item.answer1?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer1}</Button>
-          <Button disabled variant="outline" className={item.correct_answer==item.answer2?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer2}</Button>
-          <Button disabled variant="outline" className={item.correct_answer==item.answer3?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer3}</Button>
-          <Button disabled variant="outline" className={item.correct_answer==item.answer4?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer4}</Button>
+         <div className="flex flex-row items-center"><Button disabled variant="outline" className={item.correct_answer==item.answer1?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer1}</Button>{item.answer1==item.usr_txt_ans?<p>Twoja odpowiedz</p>:null}</div>
+         <div className="flex flex-row items-center"><Button disabled variant="outline" className={item.correct_answer==item.answer2?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer2}</Button>{item.answer2==item.usr_txt_ans?<p>Twoja odpowiedz</p>:null}</div>
+         <div className="flex flex-row items-center"><Button disabled variant="outline" className={item.correct_answer==item.answer3?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer3}</Button>{item.answer3==item.usr_txt_ans?<p>Twoja odpowiedz</p>:null}</div>
+         <div className="flex flex-row items-center"><Button disabled variant="outline" className={item.correct_answer==item.answer4?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer4}</Button>{item.answer4==item.usr_txt_ans?<p>Twoja odpowiedz</p>:null}</div>
           <div className="w-full border-2 border-black"></div>
           </div>
         ))}
