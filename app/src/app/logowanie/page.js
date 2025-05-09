@@ -66,7 +66,7 @@ export default function Log() {
             </div>
           </div>
       </CardContent>
-      <CardFooter className="flex justify-center">
+      <CardFooter className="flex justify-center gap-2">
         <Button onClick={handleLogin}>Zaloguj</Button>
         <Button onClick={handleReje}>Zarejestruj się</Button>
       </CardFooter>

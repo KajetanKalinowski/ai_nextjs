@@ -3,7 +3,7 @@ import { useState,useEffect, use } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import PocketBase, { ClientResponseError } from 'pocketbase';
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
 import {
     Card,
     CardContent,
@@ -18,23 +18,28 @@ import {
     ChartTooltip,
     ChartTooltipContent,
   } from "@/components/ui/chart"
-  
+  import Menu from "@/components/ui/menu";
 const pb = new PocketBase('http://172.16.15.138:8080');
 //const pb = new PocketBase('http://192.168.0.150:8080');
 export default function Historia({params}) {
     const [history,setHistory]=useState(null)
     const [truel,setTruel] = useState(0)
     const [falsel,setFalsel] = useState(0)
+    const [sesja,setSesja] = useState(null)
     useEffect(()=>{
         const getHis = async()=>{
           try {
              const data = await fetch('http://172.16.15.138:5678/webhook/history')
             //const data = await fetch('http://192.168.0.150:5678/webhook/history')
+            const dane = await pb.collection('Sesje').getFullList({
+              filter: `nrsesji = '${params.kod}'`,
+            });
             const json = await data.json()
             console.log(json.items)
             setHistory(json.items)
             console.log(params.kod)
-            
+            setSesja(dane[0])
+            console.log(dane[0])
           } catch (error) {
             console.log(error)
           }
@@ -42,36 +47,25 @@ export default function Historia({params}) {
         }
         getHis()
       },[])
-      const chartData = [
-        { month: "Odpowiedzi", Poprawne: truel, Bledne: falsel  },
-        
-      ]
+      const chartData = [{ month: "Odpowiedzi", poprawne: sesja&&sesja.poprawne, niepoprawne: sesja&&sesja.niepoprawne }]
       const chartConfig = {
-        Poprawne: {
-          label: "Poprawne",
-          color: "hsl(var(--chart-1))",
+         poprawne: {
+         label: "Poprawne",
+         color: "hsl(var(--chart-1))",
         },
-        Bledne: {
-            label: "Błędne",
-            color: "hsl(var(--chart-2))",
-          }
-        
+          niepoprawne: {
+          label: "Błędne",
+          color: "hsl(var(--chart-2))",
+        },
       }
+      const totalVisitors1 = chartData[0].poprawne 
+      const totalVisitors2 =  chartData[0].niepoprawne
       
-      useEffect(()=>{
-        const getInf = ()=>{
-        history && history.map((item)=>{
-            if(item.nrsesji==params.kod){
-                (item.usr_answer=="true"?setTruel(truel+1):(item.usr_answer=="false"?setFalsel(falsel+1):null))
-            }
-        })
-    }
-    getInf()
-      },[history])
     return(
         <div className="w-full h-[100vh]">
+          <Menu></Menu>
             <h1 className="text-center h-[3vh]"><b>Twoje odpowiedzi</b></h1>
-<ScrollArea className="flex flex-col gap-2 h-[60vh] w-full rounded-md border">
+<ScrollArea className="flex flex-col gap-2 h-[55vh] w-full rounded-md border">
         {history&&history.map((item,idx)=>(
             (item.nrsesji==params.kod?
           <div key={idx} className="flex flex-col justify-center items-center gap-2 m-2">
@@ -86,30 +80,67 @@ export default function Historia({params}) {
             :<></>)
         ))}
       </ScrollArea>
-      <Card className="h-[37vh] w-full">
-      <CardHeader>
-        <CardTitle>Wykres odpowiedzi</CardTitle>
-        <CardDescription></CardDescription>
+      <Card className="flex flex-col h-[37vh]">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>Twoje odpowiedzi</CardTitle>
+        <CardDescription>Poprawne odpowiedzi</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value}  
-            />
+      <CardContent className="flex flex-1 items-center pb-0">
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square w-full max-w-[250px]"
+        >
+          <RadialBarChart
+            data={chartData}
+            endAngle={180}
+            innerRadius={80}
+            outerRadius={130}
+          >
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
+              content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="Poprawne" fill="green" radius={4} />
-            <Bar dataKey="Bledne" fill="red" radius={4} />
-            
-          </BarChart>
+            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) - 16}
+                          className="fill-foreground text-2xl font-bold"
+                        >
+                          {totalVisitors1+" / "+10}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 4}
+                          className="fill-muted-foreground"
+                        >
+                          Poprawność
+                        </tspan>
+                      </text>
+                    )
+                  }
+                }}
+              />
+            </PolarRadiusAxis>
+            <RadialBar
+              dataKey="poprawne"
+              stackId="a"
+              cornerRadius={5}
+              fill="green"
+              className="stroke-transparent stroke-2"
+            />
+            <RadialBar
+              dataKey="niepoprawne"
+              fill="red"
+              stackId="a"
+              cornerRadius={5}
+              className="stroke-transparent stroke-2"
+            />
+          </RadialBarChart>
         </ChartContainer>
       </CardContent>
     </Card>

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { TrendingUp } from "lucide-react"
+import { Check,X } from "lucide-react"
 import {
   Label,
   PolarGrid,
@@ -30,7 +30,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-
+import Menu from "@/components/ui/menu"
 import PocketBase, { ClientResponseError } from 'pocketbase';
 const pb = new PocketBase('http://172.16.15.138:8080');
 //const pb = new PocketBase('http://192.168.0.150:8080');
@@ -46,6 +46,8 @@ export default function Home(){
   const [show,setShow] = useState(true)
   const [sesjon,setSesjon] = useState(Date())
   const [cos,setCos] = useState(Math.random()*10000)
+  const [truel,setTruel] = useState(0)
+  const [falsel,setFalsel] = useState(0)
   if(!user){
     window.location.href="/logowanie"
   }
@@ -53,7 +55,6 @@ export default function Home(){
     try {
       const data = await fetch('http://172.16.15.138:5678/webhook/api',{headers:{"topic":`${input}`}})
      //const data = await fetch('http://192.168.0.150:5678/webhook/api',{headers:{"topic":`${input}`}})
-    await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&nrsesji=${cos}&category=${input}`,{method:"POST"})
      //await fetch(`http://192.168.0.150:5678/webhook/sesja?sesja=${sesjon}&category=${input}`,{method:"POST"})
       const json = await data.json()
       console.log(data)
@@ -88,6 +89,7 @@ export default function Home(){
     //     getData()
     // }
     
+    
     } catch (err) {
       console.log(err)
     }
@@ -116,16 +118,20 @@ export default function Home(){
   }
   const sendInf = async(i)=>{
     console.log(i)
+    if(i.isCorrect==true){
+      setTruel(truel+1)
+      console.log(truel)
+    }else if(i.isCorrect==false){
+      setFalsel(falsel+1)
+      console.log(falsel)
+    }
     await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i.isCorrect}&usr_txt_ans=${i.text}&nrsesji=${cos}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     //await fetch(`http://192.168.0.150:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     setClick(1)
   }
-  const wyloguj = ()=>{
-    pb.authStore.clear()
-    window.location.href="/logowanie"
-  }
-  const pod = ()=>{
-    window.location.href="/podsumowanie"
+  const pod = async()=>{
+    await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&poprawne=${truel}&niepoprawne=${falsel}&nrsesji=${cos}&category=${input}`,{method:"POST"})
+    (window.location.href=`/${cos}`).setTimeout("czas",2000)
   }
   const chartData = [
     { progress: "Pytania", pytania: liczbap, fill: "var(--color-safari)" },
@@ -141,8 +147,9 @@ export default function Home(){
     },
   }
   return(
-    <div className="flex flex-col justify-center items-center h-screen w-screen gap-2">
-      <Button onClick={wyloguj}>Wyloguj</Button>
+    <>
+    <Menu></Menu>
+    <div className="flex flex-col justify-center items-center h-[95vh] w-screen gap-2">
       {/* <Input onChange={(e)=>{handleInput(e)}} placeholder="Temat pytania" className="w-[300px]"></Input> */}
       <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
@@ -192,7 +199,7 @@ export default function Home(){
                                 y={(viewBox.cy || 0) + 24}
                                 className="fill-muted-foreground"
                               >
-                                {/* {tu może być tekst} */}
+                               ✔️ {truel} | {falsel} ❌
                               </tspan>
                             </text>
                           )
@@ -237,7 +244,7 @@ export default function Home(){
             {first==1 && liczbap<10?(click!=0?<Button onClick={getData}>Następne Pytanie</Button>:<Button disabled onClick={getData}>Następne Pytanie</Button>):(click!=0?<Button onClick={pod}>Przejdź do podsumowania</Button>:<Button disabled onClick={pod}>Przejdź do podsumowania</Button>)}
           </div>
       }
-      <ScrollArea className="flex flex-col gap-2 h-[50vh] w-full rounded-md border">
+      {/* <ScrollArea className="flex flex-col gap-2 h-[50vh] w-full rounded-md border">
         {history&&history.map((item,idx)=>(
           <div key={idx} className="flex flex-col justify-center items-center gap-2 m-2">
           <h1>{item.question}</h1>
@@ -248,7 +255,8 @@ export default function Home(){
           <div className="w-full border-2 border-black"></div>
           </div>
         ))}
-      </ScrollArea>
+      </ScrollArea> */}
     </div>
+    </>
   )
 }

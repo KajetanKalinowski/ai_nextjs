@@ -14,16 +14,16 @@ import {
   import PocketBase, { ClientResponseError } from 'pocketbase';
 const pb = new PocketBase('http://172.16.15.138:8080');
 export default function Rej() {
-    const [inputs, setInputs] = useState({login:null,password:null,password2:null})
+    const [inputs, setInputs] = useState({login:null,name:null,password:null,password2:null})
     const handleRej = async ()=>{
         try{
         const data = {
-            "username": `${(inputs.login).replace("@","")}`,
+            "username": `${(inputs.name).replace("@","")}`,
             "email": `${inputs.login}`,
             "emailVisibility": true,
             "password": `${inputs.password}`,
             "passwordConfirm": `${inputs.password2}`,
-            "name": `${(inputs.login).replace("@","")}`
+            "name": `${(inputs.name).replace("@","")}`
         };
         console.log(data)
         const record = await pb.collection('users').create(data);
@@ -51,6 +51,9 @@ export default function Rej() {
           handleRej(); // Wykonaj akcję, jak przy kliknięciu przycisku
         }
       };
+      const handleLog = ()=>{
+        window.location.href="/logowanie"
+      }
     return(
         <div className="flex flex-col justify-center items-center w-full h-[90vh]">
         <Card className="w-[350px]">
@@ -64,17 +67,22 @@ export default function Rej() {
               <Input id="login" placeholder="Login" onChange={(e)=>{handleInput(e,"login")}} onKeyDown={handleKeyPress}/>
             </div>
             <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between">Username</Label>
+              <Input id="name" placeholder="Name" onChange={(e)=>{handleInput(e,"name")}} onKeyDown={handleKeyPress}/>
+            </div>
+            <div className="flex flex-col space-y-1.5">
               <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between">Password</Label>
               <Input type="password" id="pass" placeholder="Password" onChange={(e)=>{handleInput(e,"password")}} onKeyDown={handleKeyPress}/>
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between">Powtórz Password</Label>
-              <Input type="password" id="pass" placeholder="Password" onChange={(e)=>{handleInput(e,"password2")}} onKeyDown={handleKeyPress}/>
+              <Input type="password" id="pass2" placeholder="Password" onChange={(e)=>{handleInput(e,"password2")}} onKeyDown={handleKeyPress}/>
             </div>
           </div>
       </CardContent>
-      <CardFooter className="flex justify-center">
+      <CardFooter className="flex justify-center gap-2">
         <Button onClick={handleRej}>Zarejestruj</Button>
+        <Button onClick={handleLog}>Zaloguj</Button>
       </CardFooter>
     </Card>
     </div>
