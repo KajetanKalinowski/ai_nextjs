@@ -63,26 +63,26 @@ export default function Rej() {
       <CardContent>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between">E-mail</Label>
+              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between text-orange-400">E-mail</Label>
               <Input id="login" placeholder="Login" onChange={(e)=>{handleInput(e,"login")}} onKeyDown={handleKeyPress}/>
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between">Username</Label>
+              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between text-orange-400">Username</Label>
               <Input id="name" placeholder="Name" onChange={(e)=>{handleInput(e,"name")}} onKeyDown={handleKeyPress}/>
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between">Password</Label>
+              <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between text-orange-400">Password</Label>
               <Input type="password" id="pass" placeholder="Password" onChange={(e)=>{handleInput(e,"password")}} onKeyDown={handleKeyPress}/>
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between">Powtórz Password</Label>
+              <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between text-orange-400">Powtórz Password</Label>
               <Input type="password" id="pass2" placeholder="Password" onChange={(e)=>{handleInput(e,"password2")}} onKeyDown={handleKeyPress}/>
             </div>
           </div>
       </CardContent>
       <CardFooter className="flex justify-center gap-2">
-        <Button onClick={handleRej}>Zarejestruj</Button>
-        <Button onClick={handleLog}>Zaloguj</Button>
+        <Button className="hover:bg-orange-400" onClick={handleRej}>Zarejestruj</Button>
+        <Button className="hover:bg-orange-400" onClick={handleLog}>Zaloguj</Button>
       </CardFooter>
     </Card>
     </div>

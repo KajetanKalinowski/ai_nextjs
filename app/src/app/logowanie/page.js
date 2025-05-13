@@ -57,18 +57,18 @@ export default function Log() {
       <CardContent>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between">E-mail</Label>
+              <Label htmlFor="login" className="flex flex-row text-center items-center justify-between text-orange-400">E-mail</Label>
               <Input id="login" placeholder="Login" onChange={(e)=>{handleInput(e,"login")}} onKeyDown={handleKeyPress}/>
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between">Password</Label>
+              <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between text-orange-400">Password</Label>
               <Input type="password" id="pass" placeholder="Password" onChange={(e)=>{handleInput(e,"password")}} onKeyDown={handleKeyPress}/>
             </div>
           </div>
       </CardContent>
       <CardFooter className="flex justify-center gap-2">
-        <Button onClick={handleLogin}>Zaloguj</Button>
-        <Button onClick={handleReje}>Zarejestruj się</Button>
+        <Button className="hover:bg-orange-400" onClick={handleLogin}>Zaloguj</Button>
+        <Button className="hover:bg-orange-400" onClick={handleReje}>Zarejestruj się</Button>
       </CardFooter>
     </Card>
     </div>

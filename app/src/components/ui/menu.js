@@ -9,10 +9,10 @@ export default function Menu() {
         window.location.href="/logowanie"
       }
     return(
-        <div className="h-[5vh] w-full flex flex-row justify-center items-center gap-5">
+        <div className="h-[5vh] w-full flex flex-row justify-center items-center gap-5 bg-orange-400">
             <Link href={"/"}>Quiz</Link>
             <Link href={"/podsumowanie"}>Sesje</Link>
-            <Button className="bg-white text-black hover:bg-white" onClick={wyloguj}>Wyloguj</Button>
+            <Button className="bg-orange-400 text-black hover:bg-orange-400" onClick={wyloguj}>Wyloguj</Button>
         </div>
     )
 }

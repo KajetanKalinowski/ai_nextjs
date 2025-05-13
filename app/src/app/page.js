@@ -163,8 +163,8 @@ export default function Home(){
               >
                 <RadialBarChart
                   data={chartData}
-                  startAngle={0}
-                  endAngle={liczbap*36}
+                  startAngle={90}
+                  endAngle={90+(liczbap*-36)}
                   innerRadius={80}
                   outerRadius={110}
                 >

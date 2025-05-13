@@ -26,6 +26,10 @@ export default function Historia({params}) {
     const [truel,setTruel] = useState(0)
     const [falsel,setFalsel] = useState(0)
     const [sesja,setSesja] = useState(null)
+    const [user,setUser] = useState(pb.authStore.record)
+      if(!user){
+        window.location.href="/logowanie"
+      }
     useEffect(()=>{
         const getHis = async()=>{
           try {
