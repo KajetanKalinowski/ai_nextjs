@@ -48,6 +48,8 @@ export default function Home(){
   const [cos,setCos] = useState(Math.random()*10000)
   const [truel,setTruel] = useState(0)
   const [falsel,setFalsel] = useState(0)
+  const [notion,setNotion] = useState(false)
+  const [n_ans,setN_ans] = useState(false)
   if(!user){
     window.location.href="/logowanie"
   }
@@ -62,14 +64,16 @@ export default function Home(){
       setDane(json.output)
       setClick(0)
       setFirst(1)
+      setNotion(false)
       setLiczbap(liczbap+1)
       console.log(sesjon)
-    //   if(json.output==undefined){
-    //     getData()
-    // }
+       if(json.output==undefined){
+         getNotion()
+     }
     
     } catch (err) {
       console.log(err)
+      getNotion()
     }
    
   }
@@ -83,17 +87,41 @@ export default function Home(){
       setDane(json.output)
       setClick(0)
       setFirst(1)
+      setNotion(false)
       setLiczbap(liczbap+1)
       console.log(sesjon)
-    //   if(json.output==undefined){
-    //     getData()
-    // }
+      console.log(input)
+      if(json.output==undefined){
+        getNotion()
+    }
     
     
     } catch (err) {
       console.log(err)
+      getNotion()
     }
    
+  }
+  const getNotion = async ()=>{
+    try{
+    const data = await fetch('http://172.16.15.138:5678/webhook/notion',
+      {headers:{"topic":`${input}`}}
+      )
+    const json = await data.json()
+    console.log(json)
+    
+    setDane(json[0])
+    
+    setClick(0)
+    setFirst(1)
+    setLiczbap(liczbap+1)
+    setNotion(true)
+    console.log(sesjon)
+    console.log(input)
+    }catch(err){
+      console.log(err)
+    }
+
   }
   useEffect(()=>{
     const getHis = async()=>{
@@ -112,7 +140,7 @@ export default function Home(){
 
   
   const handleInput = (e)=>{
-    setInput(e)
+    setInput(e.toString())
     console.log(e)
     setShow(false)
   }
@@ -125,13 +153,28 @@ export default function Home(){
       setFalsel(falsel+1)
       console.log(falsel)
     }
-    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i.isCorrect}&usr_txt_ans=${i.text}&nrsesji=${cos}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i.isCorrect}&usr_txt_ans=${i.text}&nrsesji=${cos}&id_usr=${user.id}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    //await fetch(`http://192.168.0.150:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
+    setClick(1)
+  }
+  const sendInfN = async(i)=>{
+    console.log(i)
+    if(i.target.innerHTML==dane.property_correct_answer){
+      setN_ans(true)
+      setTruel(truel+1)
+      console.log(truel)
+    }else{
+      setN_ans(false)
+      setFalsel(falsel+1)
+      console.log(falsel)
+    }
+    await fetch(`http://172.16.15.138:5678/webhook/base?question=${dane.property_question}&answer1=${dane.property_answer1}&answer2=${dane.property_answer2}&answer3=${dane.property_answer3}&answer4=${dane.property_answer4}&sesjon=${sesjon}&category=${input}&usr_answer=${n_ans}&usr_txt_ans=${i.target.innerHTML}&nrsesji=${cos}&id_usr=${user.id}&correct_answer=${dane.property_correct_answer}`,{method:"POST"})
     //await fetch(`http://192.168.0.150:5678/webhook/base?question=${dane.question}&answer1=${dane.answers[0].text}&answer2=${dane.answers[1].text}&answer3=${dane.answers[2].text}&answer4=${dane.answers[3].text}&sesjon=${sesjon}&category=${input}&usr_answer=${i}&correct_answer=${(dane.answers[0].isCorrect==true?dane.answers[0].text:(dane.answers[1].isCorrect==true?dane.answers[1].text:(dane.answers[2].isCorrect==true?dane.answers[2].text:(dane.answers[3].isCorrect==true?dane.answers[3].text:null))))}`,{method:"POST"})
     setClick(1)
   }
   const pod = async()=>{
-    await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&poprawne=${truel}&niepoprawne=${falsel}&nrsesji=${cos}&category=${input}`,{method:"POST"})
-    (window.location.href=`/${cos}`).setTimeout("czas",2000)
+    await fetch(`http://172.16.15.138:5678/webhook/sesja?sesja=${sesjon}&id_usr=${user.id}&poprawne=${truel}&niepoprawne=${falsel}&nrsesji=${cos}&category=${input}`,{method:"POST"})
+    window.location.href=`/${cos}`
   }
   const chartData = [
     { progress: "Pytania", pytania: liczbap, fill: "var(--color-safari)" },
@@ -148,6 +191,7 @@ export default function Home(){
   }
   return(
     <>
+    
     <Menu></Menu>
     <div className="flex flex-col justify-center items-center h-[95vh] w-screen gap-2">
       {/* <Input onChange={(e)=>{handleInput(e)}} placeholder="Temat pytania" className="w-[300px]"></Input> */}
@@ -224,15 +268,13 @@ export default function Home(){
           <SelectItem value="CSS">CSS</SelectItem>
           <SelectItem value="JavaScript">JavaScript</SelectItem>
           <SelectItem value="Python">Python</SelectItem>
-          <SelectItem value="C#">C#</SelectItem>
-          <SelectItem value="C++">C++</SelectItem>
           <SelectItem value="C">C</SelectItem>
           <SelectItem value="PHP">PHP</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>:<></>}
       {first==0?<Button onClick={onfirst} disabled={show}>Losuj Pytanie</Button>:<></>}
-      {dane && 
+      {notion==false?(dane && 
           <div className="flex flex-col justify-start items-center gap-2">
             <h1 className="font-bold">{dane.question}</h1>
             <div className="flex flex-col gap-2">
@@ -243,7 +285,18 @@ export default function Home(){
             </div>
             {first==1 && liczbap<10?(click!=0?<Button onClick={getData}>Następne Pytanie</Button>:<Button disabled onClick={getData}>Następne Pytanie</Button>):(click!=0?<Button onClick={pod}>Przejdź do podsumowania</Button>:<Button disabled onClick={pod}>Przejdź do podsumowania</Button>)}
           </div>
-      }
+      ):(dane && 
+          <div className="flex flex-col justify-start items-center gap-2">
+            <h1 className="font-bold">{dane.property_question}</h1>
+            <div className="flex flex-col gap-2">
+            
+              <Button disabled={click==1?true:false} variant="outline" onClick={(e)=>{sendInfN(e)}} className={click==1?(dane.property_answer1==dane.property_correct_answer?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{dane.property_answer1}</Button>
+              <Button disabled={click==1?true:false} variant="outline" onClick={(e)=>{sendInfN(e)}} className={click==1?(dane.property_answer2==dane.property_correct_answer?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{dane.property_answer2}</Button>
+              <Button disabled={click==1?true:false} variant="outline" onClick={(e)=>{sendInfN(e)}} className={click==1?(dane.property_answer3==dane.property_correct_answer?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{dane.property_answer3}</Button>
+              <Button disabled={click==1?true:false} variant="outline" onClick={(e)=>{sendInfN(e)}} className={click==1?(dane.property_answer4==dane.property_correct_answer?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`):`border-2 border-black bg-black-500`}>{dane.property_answer4}</Button>
+            </div>
+            {first==1 && liczbap<10?(click!=0?<Button onClick={getData}>Następne Pytanie</Button>:<Button disabled onClick={getData}>Następne Pytanie</Button>):(click!=0?<Button onClick={pod}>Przejdź do podsumowania</Button>:<Button disabled onClick={pod}>Przejdź do podsumowania</Button>)}
+          </div>)}
       {/* <ScrollArea className="flex flex-col gap-2 h-[50vh] w-full rounded-md border">
         {history&&history.map((item,idx)=>(
           <div key={idx} className="flex flex-col justify-center items-center gap-2 m-2">
@@ -258,5 +311,7 @@ export default function Home(){
       </ScrollArea> */}
     </div>
     </>
+    
+
   )
 }

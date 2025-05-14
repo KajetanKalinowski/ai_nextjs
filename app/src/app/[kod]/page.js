@@ -66,13 +66,14 @@ export default function Historia({params}) {
       const totalVisitors2 =  chartData[0].niepoprawne
       
     return(
-        <div className="w-full h-[100vh]">
+        <div className="w-full h-[95vh]">
           <Menu></Menu>
             <h1 className="text-center h-[3vh]"><b>Twoje odpowiedzi</b></h1>
-<ScrollArea className="flex flex-col gap-2 h-[55vh] w-full rounded-md border">
+<ScrollArea className="flex flex-col gap-2 h-[65vh] w-full rounded-md border">
         {history&&history.map((item,idx)=>(
+          
             (item.nrsesji==params.kod?
-          <div key={idx} className="flex flex-col justify-center items-center gap-2 m-2">
+          <div className="flex flex-col justify-center items-center gap-2 m-2">
           <h1>{item.question}</h1>
          <div className="flex flex-row items-center"><Button disabled variant="outline" className={item.correct_answer==item.answer1?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer1}</Button>{item.answer1==item.usr_txt_ans?<p>Twoja odpowiedz</p>:null}</div>
          <div className="flex flex-row items-center"><Button disabled variant="outline" className={item.correct_answer==item.answer2?`border-2 border-black bg-green-500 disabled:opacity-100`:`border-2 border-black bg-red-500 disabled:opacity-100`}>{item.answer2}</Button>{item.answer2==item.usr_txt_ans?<p>Twoja odpowiedz</p>:null}</div>
@@ -82,9 +83,10 @@ export default function Historia({params}) {
           
           </div>
             :<></>)
+            
         ))}
       </ScrollArea>
-      <Card className="flex flex-col h-[37vh]">
+      <Card className="flex flex-col h-[27vh]">
       <CardHeader className="items-center pb-0">
         <CardTitle>Twoje odpowiedzi</CardTitle>
         <CardDescription>Poprawne odpowiedzi</CardDescription>
@@ -92,7 +94,7 @@ export default function Historia({params}) {
       <CardContent className="flex flex-1 items-center pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square w-full max-w-[250px]"
+          className="mx-auto aspect-square w-full max-w-[180px]"
         >
           <RadialBarChart
             data={chartData}

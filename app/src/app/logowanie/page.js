@@ -12,6 +12,7 @@ import {
   import { Label } from "@/components/ui/label"
   import { Button } from "@/components/ui/button"
   import PocketBase, { ClientResponseError } from 'pocketbase';
+import { BorderBeam } from "@/components/magicui/border-beam"
 const pb = new PocketBase('http://172.16.15.138:8080');
 //const pb = new PocketBase('http://192.168.0.150:8080');
 export default function Log() {
@@ -50,7 +51,7 @@ export default function Log() {
     }
     return(
         <div className="flex flex-col justify-center items-center w-full h-[90vh]">
-        <Card className="w-[350px]">
+        <Card className=" relative w-[350px]">
       <CardHeader>
         <CardTitle className="flex justify-center">Logowanie</CardTitle>
       </CardHeader>
@@ -64,12 +65,25 @@ export default function Log() {
               <Label htmlFor="pass" className="flex flex-row text-center items-center justify-between text-orange-400">Password</Label>
               <Input type="password" id="pass" placeholder="Password" onChange={(e)=>{handleInput(e,"password")}} onKeyDown={handleKeyPress}/>
             </div>
+            
           </div>
+          
       </CardContent>
       <CardFooter className="flex justify-center gap-2">
         <Button className="hover:bg-orange-400" onClick={handleLogin}>Zaloguj</Button>
         <Button className="hover:bg-orange-400" onClick={handleReje}>Zarejestruj się</Button>
       </CardFooter>
+        <BorderBeam
+        duration={6}
+        size={400}
+        className="from-transparent via-red-500 to-transparent"
+      />
+      <BorderBeam
+        duration={6}
+        delay={3}
+        size={400}
+        className="from-transparent via-blue-500 to-transparent"
+      />
     </Card>
     </div>
     )

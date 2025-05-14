@@ -12,6 +12,7 @@ import {
   import { Label } from "@/components/ui/label"
   import { Button } from "@/components/ui/button"
   import PocketBase, { ClientResponseError } from 'pocketbase';
+import { BorderBeam } from "@/components/magicui/border-beam"
 const pb = new PocketBase('http://172.16.15.138:8080');
 export default function Rej() {
     const [inputs, setInputs] = useState({login:null,name:null,password:null,password2:null})
@@ -56,7 +57,7 @@ export default function Rej() {
       }
     return(
         <div className="flex flex-col justify-center items-center w-full h-[90vh]">
-        <Card className="w-[350px]">
+        <Card className="relative w-[350px]">
       <CardHeader>
         <CardTitle className="flex justify-center">Rejestracja</CardTitle>
       </CardHeader>
@@ -84,6 +85,17 @@ export default function Rej() {
         <Button className="hover:bg-orange-400" onClick={handleRej}>Zarejestruj</Button>
         <Button className="hover:bg-orange-400" onClick={handleLog}>Zaloguj</Button>
       </CardFooter>
+      <BorderBeam
+              duration={6}
+              size={400}
+              className="from-transparent via-red-500 to-transparent"
+            />
+            <BorderBeam
+              duration={6}
+              delay={3}
+              size={400}
+              className="from-transparent via-blue-500 to-transparent"
+            />
     </Card>
     </div>
     )
