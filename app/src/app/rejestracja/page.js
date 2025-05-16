@@ -15,6 +15,10 @@ import {
 import { BorderBeam } from "@/components/magicui/border-beam"
 const pb = new PocketBase('http://172.16.15.138:8080');
 export default function Rej() {
+    const [user,setUser] = useState(pb.authStore.record)
+  if(user){
+    window.location.href="/"
+  }
     const [inputs, setInputs] = useState({login:null,name:null,password:null,password2:null})
     const handleRej = async ()=>{
         try{

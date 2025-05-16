@@ -46,6 +46,7 @@ export default function Home(){
   const [show,setShow] = useState(true)
   const [sesjon,setSesjon] = useState(Date())
   const [cos,setCos] = useState(Math.random()*10000)
+  const [cos2,setCos2] = useState(((Math.random()*5)).toFixed(0))
   const [truel,setTruel] = useState(0)
   const [falsel,setFalsel] = useState(0)
   const [notion,setNotion] = useState(false)
@@ -109,9 +110,9 @@ export default function Home(){
       )
     const json = await data.json()
     console.log(json)
-    
-    setDane(json[0])
-    
+    console.log(cos2)
+    setDane(json[cos2])
+    setCos2(((Math.random()*5)).toFixed(0))
     setClick(0)
     setFirst(1)
     setLiczbap(liczbap+1)
